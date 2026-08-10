@@ -1,0 +1,10 @@
+{
+  "short_name": "Dragonwood",
+  "name": "Dragonwood Academy - RPG de Dragões",
+  "icons": [],
+  "start_url": ".",
+  "background_color": "#0f172a",
+  "theme_color": "#1e293b",
+  "display": "standalone",
+  "orientation": "landscape"
+}

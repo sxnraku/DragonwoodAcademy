@@ -1,0 +1,9 @@
+{
+  "name": "Dragonwood Academy",
+  "description": "A charming RPG where you enroll in a magical academy to raise, train, and befriend your very own dragons. Explore the world, attend classes, and uncover ancient secrets in a game .",
+  "requestFramePermissions": [],
+  "prompt": "",
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
