@@ -108,13 +108,13 @@ npm run electron:dev
 
 ## ⚙️ Configuração da Chave de API da IA (Google Gemini)
 
-O projeto inclui suporte direto para a API do **Google Gemini**. Para utilizar a tua própria chave:
+O projeto inclui suporte para a API do **Google Gemini**. Para utilizar a tua própria chave:
 
 1. Obtém a tua API Key gratuita no [Google AI Studio](https://aistudio.google.com/app/apikey).
-2. Abre o ficheiro `services/aiService.ts`.
-3. Substitui o valor de `GEMINI_API_KEY`:
-```typescript
-const GEMINI_API_KEY = "SUA_CHAVE_AQUI";
+2. Cria um ficheiro `.env` na raiz do projeto (podes copiar o `.env.example`).
+3. Adiciona a tua chave de API no `.env`:
+```env
+VITE_GEMINI_API_KEY=sua_chave_api_aqui
 ```
 
 ---
