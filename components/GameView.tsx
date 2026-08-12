@@ -65,6 +65,9 @@ const GameView: React.FC<GameViewProps> = ({
   const [interactingNpc, setInteractingNpc] = useState<NPC | null>(null);
   const [showDesktopModal, setShowDesktopModal] = useState<boolean>(false);
   const [duelOpponent, setDuelOpponent] = useState<Rival | null>(null);
+  // NPC que despoletou o duelo pela conversa, para reabrir o dialogo no fim.
+  const [duelSourceNpc, setDuelSourceNpc] = useState<NPC | null>(null);
+  const [postDuelResult, setPostDuelResult] = useState<'win' | 'loss' | null>(null);
 
   const handleStartNpcDuel = (npc: NPC) => {
     const npcLevel = Math.max(1, dragon.level + (Math.random() > 0.5 ? 1 : 0));
@@ -96,6 +99,7 @@ const GameView: React.FC<GameViewProps> = ({
       }
     };
     setDuelOpponent(rivalNpc);
+    setDuelSourceNpc(npc);
     setGameState(GameState.TOURNAMENT);
   };
   
@@ -297,8 +301,10 @@ const GameView: React.FC<GameViewProps> = ({
   };
   
   const handleTournamentEnd = (rankChange: number, rewards: {gold: number}) => {
+      const playerWon = rewards.gold > 0;
+
       if (duelOpponent) {
-          if (rewards.gold > 0) {
+          if (playerWon) {
               setMessage(`Venceste o duelo contra ${duelOpponent.name}! Recebeste ${rewards.gold} moedas de ouro.`);
           } else {
               setMessage(`Foste derrotado no duelo contra ${duelOpponent.name}. O teu dragão recuperou a consciência com 1 HP.`);
@@ -310,6 +316,13 @@ const GameView: React.FC<GameViewProps> = ({
       setDragon(d => d ? { ...d, currentHp: Math.max(1, d.currentHp) } : null);
       setDuelOpponent(null);
       setGameState(GameState.PLAYING);
+
+      // Duelo nascido de uma provocacao: o NPC volta a falar para reagir ao resultado.
+      if (duelSourceNpc) {
+          setPostDuelResult(playerWon ? 'win' : 'loss');
+          setInteractingNpc(duelSourceNpc);
+          setDuelSourceNpc(null);
+      }
   };
 
   const handleEndDay = () => {
@@ -346,13 +359,16 @@ const GameView: React.FC<GameViewProps> = ({
         return <TrainingRegimenModal onSelect={handleTrainingRegimenSelect} onClose={() => setIsTraining(false)} />;
     }
     if (interactingNpc) {
-        return <NpcInteractionModal 
+        return <NpcInteractionModal
+            key={`${interactingNpc.id}-${postDuelResult ?? 'chat'}`}
             npc={interactingNpc} player={player} setPlayer={setPlayer}
             onAddHistoryEntry={onAddHistoryEntry}
             onStartDuel={handleStartNpcDuel}
+            postDuelResult={postDuelResult ?? undefined}
             onClose={() => {
                 setMessage(t('conversation_end_message', { npcName: t(interactingNpc.nameKey) }));
                 setInteractingNpc(null);
+                setPostDuelResult(null);
                 setCurrentLocation(null);
             }}
         />;

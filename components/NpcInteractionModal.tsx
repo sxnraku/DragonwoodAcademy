@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NPC, Player, ChatMessage, Interaction } from '../types';
 import { Send, Bot, User, Swords } from 'lucide-react';
-import { getDynamicNpcResponse } from '../services/aiService';
+import { getDynamicNpcResponse, getPostDuelResponse } from '../services/aiService';
 import { useLocalization } from '../i18n';
 
 interface NpcInteractionModalProps {
@@ -11,19 +11,65 @@ interface NpcInteractionModalProps {
   setPlayer: React.Dispatch<React.SetStateAction<Player | null>>;
   onAddHistoryEntry: (interaction: Interaction) => void;
   onStartDuel?: (npc: NPC) => void;
+  /** Definido quando a conversa reabre logo a seguir a um duelo despoletado por provocacao. */
+  postDuelResult?: 'win' | 'loss';
 }
 
-export const NpcInteractionModal: React.FC<NpcInteractionModalProps> = ({ npc, player, onClose, setPlayer, onAddHistoryEntry, onStartDuel }) => {
+export const NpcInteractionModal: React.FC<NpcInteractionModalProps> = ({ npc, player, onClose, setPlayer, onAddHistoryEntry, onStartDuel, postDuelResult }) => {
     const { t, language } = useLocalization();
     const [conversation, setConversation] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [playerInput, setPlayerInput] = useState('');
     const [hasTriggeredDuel, setHasTriggeredDuel] = useState(false);
     const conversationEndRef = useRef<null | HTMLDivElement>(null);
+    const postDuelRequested = useRef(false);
 
     useEffect(() => {
         conversationEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [conversation]);
+
+    // Abertura pos-duelo: o NPC fala primeiro, a reagir ao resultado do combate.
+    useEffect(() => {
+        if (!postDuelResult || postDuelRequested.current) return;
+        postDuelRequested.current = true;
+
+        const playerWon = postDuelResult === 'win';
+
+        (async () => {
+            setIsLoading(true);
+            try {
+                const currentAffinity = player.relationships[npc.id] || 0;
+                const reaction = await getPostDuelResponse(
+                    npc.id, t(npc.nameKey), t(npc.descriptionKey),
+                    player.name, playerWon, currentAffinity, language
+                );
+
+                setConversation(prev => [...prev, { sender: 'npc', text: reaction.responseText, npcName: t(npc.nameKey) }]);
+                setPlayer(p => {
+                    if (!p) return null;
+                    const newRelationships = { ...p.relationships, [npc.id]: (p.relationships[npc.id] || 0) + reaction.affinityChange };
+                    return { ...p, relationships: newRelationships };
+                });
+                onAddHistoryEntry({
+                    eventTitle: t('log_convo_title', { npcName: t(npc.nameKey) }),
+                    choiceText: playerWon ? 'Venceu o duelo' : 'Perdeu o duelo',
+                    outcome: { description: reaction.responseText, affinityChange: reaction.affinityChange },
+                    npcId: npc.id,
+                });
+            } finally {
+                setIsLoading(false);
+            }
+        })();
+
+        // Sem flag de cancelamento por invocacao: em <StrictMode> o React corre o efeito,
+        // limpa e volta a correr. Um "cancelled" definido na limpeza da 1a passagem
+        // descartaria a resposta que chega depois, deixando o loading preso para sempre.
+        // O postDuelRequested garante uma unica chamada; escrever estado apos desmontar
+        // e inofensivo no React 18+.
+        // Depende so do resultado do duelo: t/setPlayer/onAddHistoryEntry mudam de
+        // identidade a cada render do GameView e fariam o efeito recorrer.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [postDuelResult]);
 
     const handleSend = async () => {
         if (!playerInput.trim() || isLoading) return;
@@ -77,6 +123,20 @@ export const NpcInteractionModal: React.FC<NpcInteractionModalProps> = ({ npc, p
                        {t('button_end_conversation')}
                     </button>
                 </div>
+                {postDuelResult && (
+                    <div className={`mb-4 px-4 py-2 rounded-xl border-2 flex items-center justify-center gap-2 flex-shrink-0 ${
+                        postDuelResult === 'win'
+                            ? 'bg-amber-900/40 border-amber-400 text-amber-200'
+                            : 'bg-slate-900/60 border-slate-500 text-slate-300'
+                    }`}>
+                        <Swords className="w-5 h-5" />
+                        <span className="font-medieval text-lg">
+                            {postDuelResult === 'win'
+                                ? `Venceste o duelo contra ${t(npc.nameKey)}`
+                                : `Perdeste o duelo contra ${t(npc.nameKey)}`}
+                        </span>
+                    </div>
+                )}
                 <div className="flex-grow bg-slate-900 rounded-lg p-4 mb-4 overflow-y-auto space-y-4">
                     {conversation.map((chat, index) => (
                         <div key={index} className={`flex items-start gap-3 ${chat.sender === 'player' ? 'justify-end' : ''}`}>

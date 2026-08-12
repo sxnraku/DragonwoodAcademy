@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dragonwood Academy — Provocação e Duelo</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Lora:wght@400;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-paper:   #111827;
+    --color-paper-2: #1e293b;
+    --color-ink:     #f8fafc;
+    --color-muted:   #94a3b8;
+    --color-soft:    #64748b;
+    --color-rule:    rgba(248,250,252,0.14);
+    --color-accent:  #eab308;
+    --color-danger:  #ef4444;
+    --font-display:  'MedievalSharp', cursive;
+    --font-serif:    'Lora', Georgia, serif;
+    --font-mono:     'Geist Mono', ui-monospace, monospace;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    padding: 3rem 1.5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 960px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+  }
+  .subtitle {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+  .diagram { margin-top: 2.5rem; overflow-x: auto; }
+  svg { width: 100%; height: auto; min-width: 660px; display: block; }
+  .colophon {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Dragonwood Academy · Mecânica</p>
+    <h1>Da Provocação ao Duelo, e de Volta</h1>
+    <p class="subtitle">O ciclo que dá identidade ao jogo: insultas um NPC no chat, ele fica furioso e desafia-te, lutas, e no fim ele volta a falar para reagir ao resultado. A deteção de provocação existe em dois sítios — no prompt e num regex offline — para o ciclo nunca partir.</p>
+  </header>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 780" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fluxograma da provocacao ate ao dialogo pos-duelo">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#eab308"/>
+        </marker>
+        <marker id="arrow-danger" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#111827"/>
+
+      <!-- ============ ARROWS ============ -->
+      <path d="M440,96 V136" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M440,216 V240" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M336,280 H272" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow-danger)"/>
+      <path d="M160,308 V412 Q160,420 168,420 H336" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow-danger)"/>
+      <path d="M440,320 V380" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M440,460 V640" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M544,420 H616" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M728,448 V512" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M728,584 V660 Q728,668 720,668 H560" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- ============ ARROW LABELS ============ -->
+      <rect x="276" y="252" width="56" height="12" rx="2" fill="#111827"/>
+      <text x="304" y="261" fill="#ef4444" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">IA FALHA</text>
+
+      <rect x="448" y="336" width="44" height="12" rx="2" fill="#111827"/>
+      <text x="470" y="345" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PARSE</text>
+
+      <rect x="448" y="480" width="76" height="12" rx="2" fill="#111827"/>
+      <text x="486" y="489" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SEM DUELO</text>
+
+      <rect x="548" y="400" width="64" height="12" rx="2" fill="#111827"/>
+      <text x="580" y="409" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">TRUE</text>
+
+      <rect x="608" y="648" width="72" height="12" rx="2" fill="#111827"/>
+      <text x="644" y="657" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">AFINIDADE</text>
+
+      <!-- ============ NODES ============ -->
+
+      <!-- N1 mensagem -->
+      <rect x="320" y="40" width="240" height="56" rx="6" fill="#111827"/>
+      <rect x="320" y="40" width="240" height="56" rx="6" fill="rgba(148,163,184,0.10)" stroke="#64748b" stroke-width="1.5"/>
+      <rect x="328" y="48" width="36" height="12" rx="2" fill="none" stroke="rgba(100,116,139,0.60)" stroke-width="1"/>
+      <text x="346" y="57" fill="#94a3b8" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CHAT</text>
+      <text x="440" y="76" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Mensagem do Jogador</text>
+      <text x="440" y="88" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">NpcInteractionModal</text>
+
+      <!-- N2 IA (FOCAL) -->
+      <rect x="320" y="136" width="240" height="80" rx="6" fill="#111827"/>
+      <rect x="320" y="136" width="240" height="80" rx="6" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="2"/>
+      <rect x="328" y="144" width="28" height="12" rx="2" fill="none" stroke="rgba(234,179,8,0.50)" stroke-width="1"/>
+      <text x="342" y="153" fill="#eab308" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">IA</text>
+      <text x="440" y="176" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Resposta do NPC</text>
+      <text x="440" y="192" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">getDynamicNpcResponse()</text>
+      <text x="440" y="204" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">diálogo ||| afinidade ||| duelo</text>
+
+      <!-- D1 -->
+      <polygon points="440,240 544,280 440,320 336,280" fill="#111827"/>
+      <polygon points="440,240 544,280 440,320 336,280" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+      <text x="440" y="276" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Formato válido?</text>
+      <text x="440" y="292" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">3 campos</text>
+
+      <!-- N3 fallback regex -->
+      <rect x="48" y="252" width="224" height="56" rx="6" fill="#111827"/>
+      <rect x="48" y="252" width="224" height="56" rx="6" fill="rgba(248,250,252,0.02)" stroke="rgba(248,250,252,0.20)" stroke-width="1.5" stroke-dasharray="4,3"/>
+      <rect x="56" y="260" width="52" height="12" rx="2" fill="none" stroke="rgba(248,250,252,0.30)" stroke-width="1"/>
+      <text x="82" y="269" fill="rgba(248,250,252,0.55)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">OFFLINE</text>
+      <text x="160" y="288" fill="rgba(248,250,252,0.75)" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Deteção por Regex</text>
+      <text x="160" y="300" fill="#64748b" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">fraco · lixo · cobarde · aposto</text>
+
+      <!-- D2 -->
+      <polygon points="440,380 544,420 440,460 336,420" fill="#111827"/>
+      <polygon points="440,380 544,420 440,460 336,420" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+      <text x="440" y="416" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Provocação?</text>
+      <text x="440" y="432" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">trigger_duel</text>
+
+      <!-- N4 duelo -->
+      <rect x="616" y="392" width="224" height="56" rx="6" fill="#111827"/>
+      <rect x="616" y="392" width="224" height="56" rx="6" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+      <rect x="624" y="400" width="60" height="12" rx="2" fill="none" stroke="rgba(248,250,252,0.40)" stroke-width="1"/>
+      <text x="654" y="409" fill="#f8fafc" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">COMBATE</text>
+      <text x="728" y="428" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Duelo 1v1</text>
+      <text x="728" y="440" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">turnos · ordem por speed</text>
+
+      <!-- N5 pos-duelo (FOCAL) -->
+      <rect x="616" y="512" width="224" height="72" rx="6" fill="#111827"/>
+      <rect x="616" y="512" width="224" height="72" rx="6" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="2"/>
+      <rect x="624" y="520" width="28" height="12" rx="2" fill="none" stroke="rgba(234,179,8,0.50)" stroke-width="1"/>
+      <text x="638" y="529" fill="#eab308" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">IA</text>
+      <text x="728" y="552" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Reação Pós-Duelo</text>
+      <text x="728" y="564" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">getPostDuelResponse()</text>
+      <text x="728" y="576" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">perdeu +3..+8 · ganhou -2..+3</text>
+
+      <!-- N6 estado -->
+      <rect x="320" y="640" width="240" height="56" rx="6" fill="#111827"/>
+      <rect x="320" y="640" width="240" height="56" rx="6" fill="rgba(248,250,252,0.05)" stroke="#94a3b8" stroke-width="1.5"/>
+      <rect x="328" y="648" width="52" height="12" rx="2" fill="none" stroke="rgba(148,163,184,0.50)" stroke-width="1"/>
+      <text x="354" y="657" fill="#94a3b8" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ESTADO</text>
+      <text x="440" y="676" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Diálogo &amp; Afinidade</text>
+      <text x="440" y="688" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">player.relationships</text>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="48" y1="728" x2="832" y2="728" stroke="rgba(248,250,252,0.14)" stroke-width="1"/>
+      <text x="48" y="752" fill="#64748b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGENDA</text>
+
+      <rect x="152" y="742" width="12" height="12" rx="2" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="1.5"/>
+      <text x="172" y="752" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">CHAMADA DE IA</text>
+
+      <rect x="332" y="742" width="12" height="12" rx="2" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+      <text x="352" y="752" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">PASSO DE JOGO</text>
+
+      <rect x="516" y="742" width="12" height="12" rx="2" fill="rgba(248,250,252,0.05)" stroke="#94a3b8" stroke-width="1.5"/>
+      <text x="536" y="752" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">ESTADO PERSISTIDO</text>
+
+      <path d="M700,748 H728" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow-danger)"/>
+      <text x="740" y="752" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">CAMINHO DE FALHA</text>
+    </svg>
+  </div>
+
+  <footer class="colophon">Dragonwood Academy · components/NpcInteractionModal.tsx · components/GameView.tsx · services/aiService.ts</footer>
+</main>
+</body>
+</html>

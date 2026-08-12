@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dragonwood Academy — Arquitetura do Sistema</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Lora:wght@400;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-paper:   #111827;
+    --color-paper-2: #1e293b;
+    --color-ink:     #f8fafc;
+    --color-muted:   #94a3b8;
+    --color-soft:    #64748b;
+    --color-rule:    rgba(248,250,252,0.14);
+    --color-accent:  #eab308;
+    --color-danger:  #ef4444;
+    --font-display:  'MedievalSharp', cursive;
+    --font-serif:    'Lora', Georgia, serif;
+    --font-mono:     'Geist Mono', ui-monospace, monospace;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    padding: 3rem 1.5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 960px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+  }
+  .subtitle {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+  .diagram { margin-top: 2.5rem; overflow-x: auto; }
+  svg { width: 100%; height: auto; min-width: 660px; display: block; }
+  .colophon {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Dragonwood Academy · Arquitetura</p>
+    <h1>Topologia do Sistema</h1>
+    <p class="subtitle">Aplicação inteiramente cliente: não há servidor de jogo nem base de dados remota. O estado vive no <code>localStorage</code> e o Electron limita-se a embrulhar a mesma SPA que corre no browser.</p>
+  </header>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 580" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Diagrama de arquitetura da Dragonwood Academy">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#eab308"/>
+        </marker>
+        <marker id="arrow-danger" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#111827"/>
+
+      <!-- ============ ZONE EYEBROWS ============ -->
+      <text x="48" y="104" fill="#64748b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.16em">INVÓLUCRO · ENTREGA</text>
+      <text x="344" y="104" fill="#64748b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.16em">APLICAÇÃO</text>
+      <text x="632" y="104" fill="#64748b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.16em">SERVIÇOS · DADOS</text>
+
+      <!-- ============ ARROWS (drawn before boxes) ============ -->
+      <path d="M248,152 H344" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M248,248 H344" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M248,344 H344" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M536,152 H632" fill="none" stroke="#eab308" stroke-width="1.5" marker-end="url(#arrow-accent)"/>
+      <path d="M536,248 H632" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M632,344 H536" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- ============ ARROW LABELS ============ -->
+      <rect x="272" y="132" width="48" height="12" rx="2" fill="#111827"/>
+      <text x="296" y="141" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SHELL</text>
+
+      <rect x="266" y="228" width="60" height="12" rx="2" fill="#111827"/>
+      <text x="296" y="237" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">IMPORTMAP</text>
+
+      <rect x="278" y="324" width="36" height="12" rx="2" fill="#111827"/>
+      <text x="296" y="333" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">t()</text>
+
+      <rect x="558" y="132" width="52" height="12" rx="2" fill="#111827"/>
+      <text x="584" y="141" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">PROMPT</text>
+
+      <rect x="562" y="228" width="44" height="12" rx="2" fill="#111827"/>
+      <text x="584" y="237" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SAVE</text>
+
+      <rect x="560" y="324" width="48" height="12" rx="2" fill="#111827"/>
+      <text x="584" y="333" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">DADOS</text>
+
+      <!-- ============ COLUNA ESQUERDA ============ -->
+
+      <!-- Electron -->
+      <rect x="48" y="120" width="200" height="64" rx="6" fill="#111827"/>
+      <rect x="48" y="120" width="200" height="64" rx="6" fill="rgba(248,250,252,0.03)" stroke="rgba(248,250,252,0.30)" stroke-width="1.5"/>
+      <rect x="56" y="128" width="52" height="12" rx="2" fill="none" stroke="rgba(248,250,252,0.30)" stroke-width="1"/>
+      <text x="82" y="137" fill="rgba(248,250,252,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">DESKTOP</text>
+      <text x="148" y="160" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Electron 43</text>
+      <text x="148" y="172" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">electron/main.cjs</text>
+
+      <!-- CDN -->
+      <rect x="48" y="216" width="200" height="64" rx="6" fill="#111827"/>
+      <rect x="48" y="216" width="200" height="64" rx="6" fill="rgba(248,250,252,0.03)" stroke="rgba(248,250,252,0.30)" stroke-width="1.5"/>
+      <rect x="56" y="224" width="36" height="12" rx="2" fill="none" stroke="rgba(248,250,252,0.30)" stroke-width="1"/>
+      <text x="74" y="233" fill="rgba(248,250,252,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CDN</text>
+      <text x="148" y="256" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">esm.sh + Tailwind</text>
+      <text x="148" y="268" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">importmap · play cdn</text>
+
+      <!-- i18n -->
+      <rect x="48" y="312" width="200" height="64" rx="6" fill="#111827"/>
+      <rect x="48" y="312" width="200" height="64" rx="6" fill="rgba(148,163,184,0.10)" stroke="#64748b" stroke-width="1.5"/>
+      <rect x="56" y="320" width="36" height="12" rx="2" fill="none" stroke="rgba(100,116,139,0.60)" stroke-width="1"/>
+      <text x="74" y="329" fill="#94a3b8" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">I18N</text>
+      <text x="148" y="352" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Três Locales</text>
+      <text x="148" y="364" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">en · pt-PT · pt-BR</text>
+
+      <!-- ============ ESPINHA (FOCAL) ============ -->
+      <rect x="344" y="120" width="192" height="352" rx="6" fill="#111827"/>
+      <rect x="344" y="120" width="192" height="352" rx="6" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="2"/>
+      <rect x="352" y="128" width="36" height="12" rx="2" fill="none" stroke="rgba(234,179,8,0.50)" stroke-width="1"/>
+      <text x="370" y="137" fill="#eab308" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">APP</text>
+      <text x="440" y="280" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">React 19 SPA</text>
+      <text x="440" y="296" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">vite 6 · typescript 5.8</text>
+      <text x="440" y="308" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">GameState → 8 ecrãs</text>
+      <text x="440" y="320" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">23 componentes</text>
+
+      <!-- ============ COLUNA DIREITA ============ -->
+
+      <!-- aiService (FOCAL) -->
+      <rect x="632" y="120" width="200" height="64" rx="6" fill="#111827"/>
+      <rect x="632" y="120" width="200" height="64" rx="6" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="2"/>
+      <rect x="640" y="128" width="28" height="12" rx="2" fill="none" stroke="rgba(234,179,8,0.50)" stroke-width="1"/>
+      <text x="654" y="137" fill="#eab308" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">IA</text>
+      <text x="732" y="160" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">aiService</text>
+      <text x="732" y="172" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">gemini · ollama · offline</text>
+
+      <!-- storageService -->
+      <rect x="632" y="216" width="200" height="64" rx="6" fill="#111827"/>
+      <rect x="632" y="216" width="200" height="64" rx="6" fill="rgba(248,250,252,0.05)" stroke="#94a3b8" stroke-width="1.5"/>
+      <rect x="640" y="224" width="40" height="12" rx="2" fill="none" stroke="rgba(148,163,184,0.50)" stroke-width="1"/>
+      <text x="660" y="233" fill="#94a3b8" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">SAVE</text>
+      <text x="732" y="256" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">storageService</text>
+      <text x="732" y="268" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">dragonwood_save_data_v3</text>
+
+      <!-- constants + data -->
+      <rect x="632" y="312" width="200" height="64" rx="6" fill="#111827"/>
+      <rect x="632" y="312" width="200" height="64" rx="6" fill="rgba(248,250,252,0.05)" stroke="#94a3b8" stroke-width="1.5"/>
+      <rect x="640" y="320" width="48" height="12" rx="2" fill="none" stroke="rgba(148,163,184,0.50)" stroke-width="1"/>
+      <text x="664" y="329" fill="#94a3b8" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">ESTÁTICO</text>
+      <text x="732" y="352" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">constants + data</text>
+      <text x="732" y="364" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">NPCs · ranks · relíquias</text>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="48" y1="520" x2="832" y2="520" stroke="rgba(248,250,252,0.14)" stroke-width="1"/>
+      <text x="48" y="548" fill="#64748b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGENDA</text>
+
+      <rect x="152" y="538" width="12" height="12" rx="2" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="1.5"/>
+      <text x="172" y="548" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">NÚCLEO</text>
+
+      <rect x="300" y="538" width="12" height="12" rx="2" fill="rgba(248,250,252,0.05)" stroke="#94a3b8" stroke-width="1.5"/>
+      <text x="320" y="548" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">DADOS LOCAIS</text>
+
+      <rect x="484" y="538" width="12" height="12" rx="2" fill="rgba(248,250,252,0.03)" stroke="rgba(248,250,252,0.30)" stroke-width="1.5"/>
+      <text x="504" y="548" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">EXTERNO AO BUNDLE</text>
+
+      <rect x="700" y="538" width="12" height="12" rx="2" fill="rgba(148,163,184,0.10)" stroke="#64748b" stroke-width="1.5"/>
+      <text x="720" y="548" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">APOIO À UI</text>
+    </svg>
+  </div>
+
+  <footer class="colophon">Dragonwood Academy · App.tsx · components/GameView.tsx · storageService.ts · i18n/</footer>
+</main>
+</body>
+</html>

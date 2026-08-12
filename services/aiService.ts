@@ -3,8 +3,11 @@ import { PREDEFINED_DRAGON_DESCRIPTIONS, PREDEFINED_ACTION_OUTCOMES } from '../d
 
 // --- Proxy & Gemini API Configuration ---
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY || "";
-const PROXY_API_URL = "http://localhost:3000/generate";
-const OLLAMA_MODEL = "llama3"; 
+// NAO usar a porta 3000: e a mesma do dev server do Vite (ver vite.config.ts).
+// Com localhost:3000 este pedido bate no proprio Vite e devolve sempre 404,
+// o que tornava o nivel 2 inalcancavel. 11434 e a porta nativa do Ollama.
+const PROXY_API_URL = import.meta.env.VITE_AI_PROXY_URL || "http://localhost:11434/api/generate";
+const OLLAMA_MODEL = import.meta.env.VITE_OLLAMA_MODEL || "llama3";
 
 const getRandomItem = <T,>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
@@ -47,7 +50,9 @@ const callGemini = async (prompt: string): Promise<string> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
 
-    const models = ['gemini-3.0-flash', 'gemini-3-flash', 'gemini-3.0-flash-exp', 'gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-1.5-pro'];
+    // Aliases "-latest" primeiro: acompanham a versao atual e nao ficam obsoletos.
+    // Os modelos 2.5/2.0/1.5 antigos devolvem 404 "no longer available to new users".
+    const models = ['gemini-flash-latest', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-flash-lite-latest'];
     let lastError: any = null;
 
     for (const model of models) {
@@ -87,7 +92,9 @@ const callOllama = async (prompt: string): Promise<string> => {
         const response = await fetch(PROXY_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ model: OLLAMA_MODEL, prompt: prompt }),
+            // stream:false -> resposta num unico JSON. Sem isto o Ollama devolve
+            // NDJSON em streaming e o response.json() rebenta.
+            body: JSON.stringify({ model: OLLAMA_MODEL, prompt: prompt, stream: false }),
             signal: controller.signal,
         });
 
@@ -357,6 +364,98 @@ GENERATE THE RESPONSE NOW. STRICTLY FOLLOW THE FORMAT.
         if (language === 'pt-BR') return key; // Simplified for now
         if (language === 'en') return key;
         return key;
+    }
+};
+
+export const getPostDuelResponse = async (
+    npcId: string,
+    npcName: string,
+    npcPersona: string,
+    playerName: string,
+    playerWon: boolean,
+    currentAffinity: number,
+    language: Language
+): Promise<{ responseText: string; affinityChange: number }> => {
+    const langName = getLanguageName(language);
+    const outcome = playerWon
+        ? `${playerName} WON the duel. You were defeated.`
+        : `${playerName} LOST the duel. You won.`;
+
+    const prompt = `
+You are a master AI that strictly generates game data. Your response MUST be in ${langName}.
+
+### SCENARIO
+- **YOUR ROLE (NPC):** You are **${npcName}**. Your personality is: "${npcPersona}".
+- **WHAT JUST HAPPENED:** You challenged **${playerName}** to a dragon duel after being provoked. The duel is now over. ${outcome}
+- **AFFINITY:** Your affinity with ${playerName} is ${currentAffinity} (from -100 to 100).
+
+### TASK
+Say ONE or TWO sentences reacting to the duel's result, in character, immediately after the fight.
+
+### CRITICAL RULES
+1.  **FORMAT:** Your response MUST use the format: <dialogue>|||<affinity_change>
+2.  **IF YOU LOST:** Be humbled, breathless or begrudgingly impressed. Anger fading into respect. <affinity_change> must be POSITIVE (3 to 8).
+3.  **IF YOU WON:** Be smug, superior or teasing, but not cruel. <affinity_change> must be between -2 and 3.
+4.  **LANGUAGE:** Your dialogue MUST be in ${langName}.
+5.  **NO PREFIX:** Do NOT start with "${npcName}:". Give the dialogue directly.
+6.  **REFERENCE THE FIGHT:** Mention the duel, the dragons or the result. Do not give generic greetings.
+
+### EXAMPLE
+Ofegante... Admito, subestimei-te. O teu dragão luta com um fogo que eu não esperava.|||6
+
+### FINAL INSTRUCTION
+GENERATE THE RESPONSE NOW. STRICTLY FOLLOW THE FORMAT.
+    `;
+
+    try {
+        const responseText = await callAI(prompt);
+        const parts = responseText.split('|||');
+        if (parts.length < 2) throw new Error("Invalid response format from model.");
+
+        const dialogue = parts[0].trim();
+        const affinityChange = parseInt(parts[1].trim(), 10);
+        if (!dialogue || isNaN(affinityChange)) throw new Error("Malformed post-duel response.");
+
+        // Mantem o valor dentro do intervalo pedido, mesmo que o modelo exagere.
+        const clamped = playerWon
+            ? Math.min(8, Math.max(3, affinityChange))
+            : Math.min(3, Math.max(-2, affinityChange));
+
+        return { responseText: dialogue, affinityChange: clamped };
+    } catch (error) {
+        console.warn("Failed to generate post-duel dialogue. Using fallback.", error);
+
+        const fallbackMap: Record<string, { win: { pt: string; en: string }; loss: { pt: string; en: string } }> = {
+            elara_swiftwood: {
+                win:  { pt: "Ofegante... os pergaminhos não previam isto. Lutaste melhor do que qualquer teoria que eu tenha lido.", en: "Breathless... no scroll predicted this. You fought better than any theory I've read." },
+                loss: { pt: "O conhecimento vence o impulso, domador. Volta quando tiveres estudado um pouco mais.", en: "Knowledge beats impulse, tamer. Come back when you've studied a little more." }
+            },
+            bren_stonehand: {
+                win:  { pt: "Firme como a pedra, dizia eu... e tu partiste-a. Tens a minha consideração, domador.", en: "Firm as stone, I said... and you cracked it. You have my respect, tamer." },
+                loss: { pt: "Guarda alta da próxima vez! A disciplina ganha duelos, não a língua afiada.", en: "Guard up next time! Discipline wins duels, not a sharp tongue." }
+            },
+            seraphina_moonshadow: {
+                win:  { pt: "As sombras não te esconderam de mim... mas também não te travaram. Vejo-te de outra forma agora.", en: "The shadows did not hide you from me... nor did they stop you. I see you differently now." },
+                loss: { pt: "A mente serena prevalece. Da próxima vez, traz mais do que provocações.", en: "The serene mind prevails. Next time, bring more than taunts." }
+            },
+            kael_stormrider: {
+                win:  { pt: "Uau! Nem o meu raio te apanhou. És mesmo rápido, tenho de admitir!", en: "Whoa! Not even my lightning caught you. You really are fast, I'll admit it!" },
+                loss: { pt: "Rápido demais para ti! Treina mais e talvez me acompanhes no próximo torneio.", en: "Too fast for you! Train more and maybe you'll keep up at the next tournament." }
+            }
+        };
+
+        const generic = {
+            win:  { pt: "Admito a derrota. O teu dragão foi superior hoje.", en: "I concede. Your dragon was superior today." },
+            loss: { pt: "Falaste muito e lutaste pouco. Talvez para a próxima.", en: "You talked a lot and fought little. Maybe next time." }
+        };
+
+        const entry = fallbackMap[npcId] || generic;
+        const side = playerWon ? entry.win : entry.loss;
+
+        return {
+            responseText: language === 'en' ? side.en : side.pt,
+            affinityChange: playerWon ? 5 : 1,
+        };
     }
 };
 

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dragonwood Academy — Cascata de Resiliência da IA</title>
+<link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Lora:wght@400;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --color-paper:   #111827;
+    --color-paper-2: #1e293b;
+    --color-ink:     #f8fafc;
+    --color-muted:   #94a3b8;
+    --color-soft:    #64748b;
+    --color-rule:    rgba(248,250,252,0.14);
+    --color-accent:  #eab308;
+    --color-danger:  #ef4444;
+    --font-display:  'MedievalSharp', cursive;
+    --font-serif:    'Lora', Georgia, serif;
+    --font-mono:     'Geist Mono', ui-monospace, monospace;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-serif);
+    padding: 3rem 1.5rem;
+    -webkit-font-smoothing: antialiased;
+  }
+  main { max-width: 960px; margin: 0 auto; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: 0.75rem;
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 2rem;
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+  }
+  .subtitle {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    max-width: 62ch;
+  }
+  .diagram { margin-top: 2.5rem; overflow-x: auto; }
+  svg { width: 100%; height: auto; min-width: 660px; display: block; }
+  .colophon {
+    margin-top: 2.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-soft);
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">Dragonwood Academy · Serviços</p>
+    <h1>Cascata de Resiliência da IA</h1>
+    <p class="subtitle">Toda a geração de texto do jogo passa por <code>callAI()</code>. São três níveis de degradação: a cascata Gemini tenta sete modelos em série, o proxy Ollama local dá 1,5 s de tolerância, e cada função tem o seu próprio fallback offline. O jogo nunca fica sem resposta.</p>
+  </header>
+
+  <div class="diagram">
+    <svg viewBox="0 0 880 896" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Fluxograma da cascata de fallback da IA">
+      <defs>
+        <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#94a3b8"/>
+        </marker>
+        <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#eab308"/>
+        </marker>
+        <marker id="arrow-danger" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto">
+          <polygon points="0 0, 8 3, 0 6" fill="#ef4444"/>
+        </marker>
+      </defs>
+
+      <rect width="100%" height="100%" fill="#111827"/>
+
+      <!-- ============ ARROWS (drawn before boxes) ============ -->
+      <path d="M400,96 V136" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M400,216 V240" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M400,320 V376" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow-danger)"/>
+      <path d="M400,456 V480" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M400,560 V616" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow-danger)"/>
+      <path d="M400,696 V752" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- rails de sucesso -->
+      <path d="M504,280 H692 Q700,280 700,288 V764 Q700,772 692,772 H520" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <path d="M504,520 H632 Q640,520 640,528 V784 Q640,792 632,792 H520" fill="none" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- ============ ARROW LABELS ============ -->
+      <rect x="412" y="336" width="80" height="12" rx="2" fill="#111827"/>
+      <text x="452" y="345" fill="#ef4444" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">7/7 FALHAM</text>
+
+      <rect x="572" y="260" width="56" height="12" rx="2" fill="#111827"/>
+      <text x="600" y="269" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">TEXTO OK</text>
+
+      <rect x="412" y="576" width="76" height="12" rx="2" fill="#111827"/>
+      <text x="450" y="585" fill="#ef4444" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">SEM PROXY</text>
+
+      <rect x="540" y="500" width="56" height="12" rx="2" fill="#111827"/>
+      <text x="568" y="509" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.06em">TEXTO OK</text>
+
+      <!-- ============ NODES ============ -->
+
+      <!-- N1 entrada -->
+      <rect x="280" y="40" width="240" height="56" rx="6" fill="#111827"/>
+      <rect x="280" y="40" width="240" height="56" rx="6" fill="rgba(148,163,184,0.10)" stroke="#64748b" stroke-width="1.5"/>
+      <rect x="288" y="48" width="36" height="12" rx="2" fill="none" stroke="rgba(100,116,139,0.60)" stroke-width="1"/>
+      <text x="306" y="57" fill="#94a3b8" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">CALL</text>
+      <text x="400" y="76" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Pedido de Geração</text>
+      <text x="400" y="88" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">callAI(prompt)</text>
+
+      <!-- N2 Gemini (FOCAL) -->
+      <rect x="280" y="136" width="240" height="80" rx="6" fill="#111827"/>
+      <rect x="280" y="136" width="240" height="80" rx="6" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="2"/>
+      <rect x="288" y="144" width="44" height="12" rx="2" fill="none" stroke="rgba(234,179,8,0.50)" stroke-width="1"/>
+      <text x="310" y="153" fill="#eab308" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">NÍVEL 1</text>
+      <text x="400" y="176" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Cascata Google Gemini</text>
+      <text x="400" y="192" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">7 modelos tentados em série</text>
+      <text x="400" y="204" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">3.0-flash → … → 1.5-pro</text>
+
+      <!-- D1 -->
+      <polygon points="400,240 504,280 400,320 296,280" fill="#111827"/>
+      <polygon points="400,240 504,280 400,320 296,280" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+      <text x="400" y="276" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Devolveu texto?</text>
+      <text x="400" y="292" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">abort após 10s</text>
+
+      <!-- N3 Ollama -->
+      <rect x="280" y="376" width="240" height="80" rx="6" fill="#111827"/>
+      <rect x="280" y="376" width="240" height="80" rx="6" fill="rgba(248,250,252,0.03)" stroke="rgba(248,250,252,0.30)" stroke-width="1.5"/>
+      <rect x="288" y="384" width="44" height="12" rx="2" fill="none" stroke="rgba(248,250,252,0.30)" stroke-width="1"/>
+      <text x="310" y="393" fill="rgba(248,250,252,0.60)" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">NÍVEL 2</text>
+      <text x="400" y="416" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Proxy Ollama Local</text>
+      <text x="400" y="432" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">localhost:3000 · llama3</text>
+      <text x="400" y="444" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">abort após 1.5s</text>
+
+      <!-- D2 -->
+      <polygon points="400,480 504,520 400,560 296,520" fill="#111827"/>
+      <polygon points="400,480 504,520 400,560 296,520" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+      <text x="400" y="516" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Proxy respondeu?</text>
+      <text x="400" y="532" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">data.response</text>
+
+      <!-- N4 Fallback (FOCAL) -->
+      <rect x="280" y="616" width="240" height="80" rx="6" fill="#111827"/>
+      <rect x="280" y="616" width="240" height="80" rx="6" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="2"/>
+      <rect x="288" y="624" width="44" height="12" rx="2" fill="none" stroke="rgba(234,179,8,0.50)" stroke-width="1"/>
+      <text x="310" y="633" fill="#eab308" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">NÍVEL 3</text>
+      <text x="400" y="656" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Fallback por Função</text>
+      <text x="400" y="672" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">predefinedContent.ts</text>
+      <text x="400" y="684" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">+ regex de provocação</text>
+
+      <!-- N5 saida -->
+      <rect x="280" y="752" width="240" height="56" rx="6" fill="#111827"/>
+      <rect x="280" y="752" width="240" height="56" rx="6" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+      <rect x="288" y="760" width="32" height="12" rx="2" fill="none" stroke="rgba(248,250,252,0.40)" stroke-width="1"/>
+      <text x="304" y="769" fill="#f8fafc" font-size="7" font-family="'Geist Mono', monospace" text-anchor="middle" letter-spacing="0.08em">OUT</text>
+      <text x="400" y="788" fill="#f8fafc" font-size="12" font-weight="700" font-family="'Lora', serif" text-anchor="middle">Resposta ao Jogo</text>
+      <text x="400" y="800" fill="#94a3b8" font-size="9" font-family="'Geist Mono', monospace" text-anchor="middle">diálogo · stats · visão</text>
+
+      <!-- ============ LEGEND ============ -->
+      <line x1="64" y1="840" x2="816" y2="840" stroke="rgba(248,250,252,0.14)" stroke-width="1"/>
+      <text x="64" y="864" fill="#64748b" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.14em">LEGENDA</text>
+
+      <rect x="152" y="854" width="12" height="12" rx="2" fill="rgba(234,179,8,0.10)" stroke="#eab308" stroke-width="1.5"/>
+      <text x="172" y="864" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">NÍVEL DE IA</text>
+
+      <rect x="320" y="854" width="12" height="12" rx="2" fill="rgba(248,250,252,0.03)" stroke="rgba(248,250,252,0.30)" stroke-width="1.5"/>
+      <text x="340" y="864" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">SERVIÇO EXTERNO</text>
+
+      <rect x="524" y="854" width="12" height="12" rx="2" fill="rgba(148,163,184,0.10)" stroke="#64748b" stroke-width="1.5"/>
+      <text x="544" y="864" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">ENTRADA / SAÍDA</text>
+
+      <path d="M700,860 H728" fill="none" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="5,4" marker-end="url(#arrow-danger)"/>
+      <text x="740" y="864" fill="#94a3b8" font-size="8" font-family="'Geist Mono', monospace" letter-spacing="0.08em">CAMINHO DE FALHA</text>
+    </svg>
+  </div>
+
+  <footer class="colophon">Dragonwood Academy · services/aiService.ts · data/predefinedContent.ts</footer>
+</main>
+</body>
+</html>
